@@ -3,8 +3,7 @@
 class Database
 {
     public $connection;
-
-
+    public $statement;
 
     public function __construct($config, $username = 'root', $password = 'RufusTolu,5#')
     {
@@ -19,14 +18,32 @@ class Database
     public function query($query, $params = [])
     {
 
+        $this->statement = $this->connection->prepare(query: $query);
 
-        // $pdo = new PDO("mysql:host=localhost;dbname=myqpp", 'root', 'RufusTolu,5#');
+        $this->statement->execute($params);
 
-        $statement = $this->connection->prepare(query: $query);
+        return $this;
+    }
 
-        $statement->execute($params);
+    public function find()
+    {
+        return $this->statement->fetch();
+    }
 
-        return $statement;
+    public function findOrFail()
+    {
+        $result = $this->find();
+
+        if (!$result) {
+            abort();
+        } else {
+            return $result;
+        }
+    }
+
+    public function get()
+    {
+        return $this->statement->fetchAll();
     }
 }
 
